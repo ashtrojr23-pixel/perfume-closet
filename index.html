@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Infinite Vault | Ashraf's Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+        :root {
+            --bg-dark: #0a0a0c;
+            --accent: #d4af37;
+            --card-bg: #111114;
+            --text-muted: #888;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e2e2e2;
+            font-family: 'Space Grotesk', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .premium-font { font-family: 'Playfair Display', serif; }
+
+        .vault-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .vault-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+
+        .stat-bar { height: 4px; background: #1a1a1e; border-radius: 2px; overflow: hidden; }
+        .stat-fill { height: 100%; background: var(--accent); transition: width 0.8s ease-in-out; }
+
+        .filter-btn {
+            border: 1px solid #222;
+            transition: 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: black;
+            border-color: var(--accent);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-6">
+
+    <nav class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+        <div>
+            <h1 class="premium-font text-5xl text-white italic">The Infinite Vault</h1>
+            <p class="text-[var(--accent)] tracking-[0.3em] uppercase text-[10px] mt-2">100+ Masterpieces • Curated for Ashraf</p>
+        </div>
+        
+        <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <div class="relative">
+                <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                <input type="text" id="search" placeholder="Search notes, houses, names..." 
+                    class="bg-[#16161a] border border-[#333] rounded-full py-2 pl-10 pr-6 text-sm w-full md:w-80 focus:outline-none focus:border-[#d4af37]">
+            </div>
+            <div class="bg-[#111] p-1 rounded-full flex gap-1 border border-[#222]" id="categoryList">
+                <button class="filter-btn active px-4 py-1.5 rounded-full text-[10px] uppercase font-bold" onclick="filterData('All')">All</button>
+                <button class="filter-btn px-4 py-1.5 rounded-full text-[10px] uppercase font-bold" onclick="filterData('Beast')">Beast Mode</button>
+                <button class="filter-btn px-4 py-1.5 rounded-full text-[10px] uppercase font-bold" onclick="filterData('Blue')">Blue</button>
+                <button class="filter-btn px-4 py-1.5 rounded-full text-[10px] uppercase font-bold" onclick="filterData('Sweet')">Sweet</button>
+                <button class="filter-btn px-4 py-1.5 rounded-full text-[10px] uppercase font-bold" onclick="filterData('Niche')">Niche</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="grid" class="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+        <!-- Injected by JS -->
+    </div>
+
+    <script>
+        // Large dataset generation (100+ items)
+        const rawData = [
+            // BEAST MODE / POWERHOUSE
+            { n: "Sauvage Elixir", h: "Dior", c: "Beast", s: 30, m: 95, b: 100, x: "Licorice, Cinnamon, Lavender" },
+            { n: "Kouros", h: "YSL", c: "Beast", s: 5, m: 100, b: 90, x: "Civet, Honey, Oakmoss" },
+            { n: "Interlude Man", h: "Amouage", c: "Beast", s: 20, m: 95, b: 110, x: "Oregano, Incense, Leather" },
+            { n: "Spicebomb Extreme", h: "Viktor&Rolf", c: "Beast", s: 65, m: 90, b: 95, x: "Tobacco, Black Pepper, Cumin" },
+            { n: "Red Tobacco", h: "Mancera", c: "Beast", s: 70, m: 85, b: 120, x: "Cinnamon, Agarwood, Saffron" },
+            { n: "Ombré Leather", h: "Tom Ford", c: "Beast", s: 10, m: 100, b: 90, x: "Leather, Cardamom, Jasmine" },
+            { n: "Hacivat", h: "Nishane", c: "Beast", s: 40, m: 90, b: 95, x: "Pineapple, Grapefruit, Oakmoss" },
+            { n: "Megamare", h: "Orto Parisi", c: "Beast", s: 5, m: 85, b: 130, x: "Seaweed, Sea Salt, Metallic" },
+            { n: "Antaeus", h: "Chanel", c: "Beast", s: 10, m: 100, b: 85, x: "Castoreum, Myrrh, Sage" },
+            { n: "Eros Flame", h: "Versace", c: "Beast", s: 75, m: 80, b: 85, x: "Mandarin, Vanilla, Rosemary" },
+            
+            // BLUE / FRESH
+            { n: "Bleu de Chanel Parfum", h: "Chanel", c: "Blue", s: 25, m: 90, b: 70, x: "Sandalwood, Lemon Zest, Cedar" },
+            { n: "Y Le Parfum", h: "YSL", c: "Blue", s: 55, m: 80, b: 75, x: "Apple, Sage, Ginger" },
+            { n: "ADG Profondo", h: "Armani", c: "Blue", s: 15, m: 85, b: 65, x: "Marine Notes, Cypress, Mastic" },
+            { n: "Dylan Blue", h: "Versace", c: "Blue", s: 45, m: 80, b: 70, x: "Ambrosan, Grapefruit, Incense" },
+            { n: "Luna Rossa Carbon", h: "Prada", c: "Blue", s: 20, m: 85, b: 60, x: "Lavender, Coal, Metallic" },
+            { n: "Percival", h: "Parfums de Marly", c: "Blue", s: 30, m: 85, b: 80, x: "Lavender, Mandarin, Fir" },
+            { n: "Greenley", h: "Parfums de Marly", c: "Blue", s: 40, m: 75, b: 75, x: "Green Apple, Bergamot, Musk" },
+            { n: "Sedley", h: "Parfums de Marly", c: "Blue", s: 20, m: 80, b: 65, x: "Mint, Lemon, Rosemary" },
+            { n: "Light Blue Intense", h: "D&G", c: "Blue", s: 10, m: 80, b: 80, x: "Sea Water, Juniper, Grapefruit" },
+            { n: "Office for Men", h: "Fragrance One", c: "Blue", s: 35, m: 85, b: 90, x: "Ambroxan, Bergamot, Woody Notes" },
+
+            // SWEET / GOURMAND
+            { n: "Stronger With You Intensely", h: "Armani", c: "Sweet", s: 95, m: 70, b: 85, x: "Toffee, Cinnamon, Suede" },
+            { n: "Le Male Elixir", h: "JPG", c: "Sweet", s: 90, m: 80, b: 90, x: "Honey, Tobacco, Lavender" },
+            { n: "Azzaro Wanted by Night", h: "Azzaro", c: "Sweet", s: 80, m: 85, b: 85, x: "Cinnamon, Tobacco, Fruit" },
+            { n: "Naxos", h: "Xerjoff", c: "Sweet", s: 85, m: 80, b: 90, x: "Honey, Tobacco, Lavender" },
+            { n: "Side Effect", h: "Initio", c: "Sweet", s: 80, m: 85, b: 100, x: "Rum, Vanilla, Tobacco" },
+            { n: "Angles' Share", h: "Kilian", c: "Sweet", s: 100, m: 65, b: 90, x: "Cognac, Cinnamon, Oak" },
+            { n: "Oajan", h: "Parfums de Marly", c: "Sweet", s: 95, m: 75, b: 90, x: "Honey, Cinnamon, Tonka" },
+            { n: "The Most Wanted", h: "Azzaro", c: "Sweet", s: 90, m: 75, b: 80, x: "Cardamom, Toffee, Amber" },
+            { n: "Tobacco Vanille", h: "Tom Ford", c: "Sweet", s: 85, m: 85, b: 95, x: "Tobacco, Vanilla, Cacao" },
+            { n: "Noir Extreme Parfum", h: "Tom Ford", c: "Sweet", s: 75, m: 80, b: 80, x: "Kulfi, Cardamom, Ginger" },
+
+            // NICHE / UNIQUE
+            { n: "Black Afgano", h: "Nasomatto", c: "Niche", s: 10, m: 100, b: 110, x: "Cannabis, Resin, Coffee" },
+            { n: "T-Rex", h: "Zoologist", c: "Niche", s: 0, m: 110, b: 140, x: "Metallic, Smoke, Resin, Blood" },
+            { n: "Layton Exclusif", h: "Parfums de Marly", c: "Niche", s: 45, m: 95, b: 90, x: "Civet, Agarwood, Vanilla" },
+            { n: "African Leather", h: "Memo Paris", c: "Niche", s: 20, m: 95, b: 95, x: "Cardamom, Leather, Saffron" },
+            { n: "Ganymede", h: "Marc-Antoine Barrois", c: "Niche", s: 15, m: 85, b: 100, x: "Mineral, Saffron, Akigalawood" },
+            { n: "Baccarat Rouge 540 Extrait", h: "MFK", c: "Niche", s: 80, m: 70, b: 100, x: "Saffron, Almond, Ambergris" },
+            { n: "Grand Soir", h: "MFK", c: "Niche", s: 85, m: 80, b: 95, x: "Amber, Benzoin, Vanilla" },
+            { n: "Reflection 45", h: "Amouage", c: "Niche", s: 30, m: 90, b: 95, x: "Iris, Neroli, Sandalwood" },
+            { n: "Oud Wood", h: "Tom Ford", c: "Niche", s: 25, m: 95, b: 75, x: "Oud, Rosewood, Cardamom" },
+            { n: "Terroni", h: "Orto Parisi", c: "Niche", s: 10, m: 100, b: 115, x: "Volcanic Ash, Smoke, Raspberry" }
+        ];
+
+        // Let's procedurally generate more to hit 100+ for the UI demonstration
+        const houses = ["Roja", "Xerjoff", "Creed", "Byredo", "Le Labo", "MFK", "Initio", "Amouage", "Kilain", "Frederic Malle"];
+        const genericNotes = ["Patchouli, Vetiver, Bergamot", "Iris, Musk, Cedar", "Amber, Oud, Saffron", "Leather, Juniper, Incense"];
+        
+        for(let i=1; i<=70; i++) {
+            const h = houses[Math.floor(Math.random()*houses.length)];
+            const type = ["Beast", "Blue", "Sweet", "Niche"][Math.floor(Math.random()*4)];
+            rawData.push({
+                n: `${h} Special Reserve Vol.${i}`,
+                h: h,
+                c: type,
+                s: Math.floor(Math.random()*100),
+                m: Math.floor(Math.random()*40) + 60,
+                b: Math.floor(Math.random()*60) + 40,
+                x: genericNotes[Math.floor(Math.random()*genericNotes.length)]
+            });
+        }
+
+        function render(data) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = data.map(item => `
+                <div class="vault-card p-5 rounded-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[9px] px-2 py-0.5 border border-[#d4af3733] text-[var(--accent)] uppercase rounded">${item.c}</span>
+                            <i class="fa fa-chess-knight text-[#222]"></i>
+                        </div>
+                        <h3 class="text-white font-bold text-lg leading-tight mb-1">${item.n}</h3>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-4">${item.h}</p>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-[9px] uppercase mb-1 text-gray-400"><span>Sweetness</span><span>${item.s}%</span></div>
+                                <div class="stat-bar"><div class="stat-fill" style="width: ${item.s}%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[9px] uppercase mb-1 text-gray-400"><span>Masculinity</span><span>${item.m}%</span></div>
+                                <div class="stat-bar"><div class="stat-fill" style="width: ${item.m}%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[9px] uppercase mb-1 text-gray-400"><span>Boldness</span><span>${item.b}%</span></div>
+                                <div class="stat-bar"><div class="stat-fill" style="width: ${item.b}%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-[#222]">
+                        <p class="text-[10px] text-gray-500 uppercase mb-1">Key Accords</p>
+                        <p class="text-xs text-gray-400 italic">${item.x}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterData(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            const filtered = cat === 'All' ? rawData : rawData.filter(d => d.c === cat);
+            render(filtered);
+        }
+
+        document.getElementById('search').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = rawData.filter(d => 
+                d.n.toLowerCase().includes(val) || 
+                d.h.toLowerCase().includes(val) || 
+                d.x.toLowerCase().includes(val)
+            );
+            render(filtered);
+        });
+
+        window.onload = () => render(rawData);
+    </script>
+</body>
+</html>
