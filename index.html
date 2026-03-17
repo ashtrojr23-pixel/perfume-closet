@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Olfactory Vault | Virtual Closet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+        :root {
+            --bg-dark: #0a0a0c;
+            --accent: #d4af37;
+            --card-bg: #16161a;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e2e2e2;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .premium-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-nav {
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .fragrance-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fragrance-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+        }
+
+        .stat-bar {
+            height: 4px;
+            background: #2a2a2e;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent);
+        }
+
+        /* Sussy glowing effect */
+        .glow-overlay {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: black;
+        }
+
+        input[type="text"] {
+            background: #1c1c21;
+            border: 1px solid #333;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto mb-12 text-center">
+        <h1 class="premium-font text-5xl md:text-7xl mb-4 text-white italic">The Vault</h1>
+        <p class="text-gray-500 uppercase tracking-widest text-sm">Curated Olfactory Identity for Ashraf</p>
+    </header>
+
+    <!-- Controls -->
+    <div class="max-w-7xl mx-auto mb-12 space-y-6">
+        <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="flex flex-wrap gap-2" id="categoryFilters">
+                <button class="filter-btn active px-4 py-2 border border-[#333] rounded-full text-xs transition" onclick="filterCategory('All')">All</button>
+                <button class="filter-btn px-4 py-2 border border-[#333] rounded-full text-xs transition" onclick="filterCategory('Powerhouse')">Powerhouse</button>
+                <button class="filter-btn px-4 py-2 border border-[#333] rounded-full text-xs transition" onclick="filterCategory('Executive')">Executive</button>
+                <button class="filter-btn px-4 py-2 border border-[#333] rounded-full text-xs transition" onclick="filterCategory('Blue')">Blue & Aquatic</button>
+                <button class="filter-btn px-4 py-2 border border-[#333] rounded-full text-xs transition" onclick="filterCategory('Gourmand')">Sweet/Gourmand</button>
+                <button class="filter-btn px-4 py-2 border border-[#333] rounded-full text-xs transition" onclick="filterCategory('Experimental')">Experimental</button>
+            </div>
+            <div class="relative w-full md:w-64">
+                <i class="fa fa-search absolute left-3 top-3 text-gray-500 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Search the collection..." class="w-full pl-10 pr-4 py-2 rounded-lg text-sm" onkeyup="searchFragrances()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div id="closetGrid" class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- JS will inject cards here -->
+    </div>
+
+    <script>
+        const fragrances = [
+            { name: "Sauvage Elixir", house: "Dior", category: "Powerhouse", sweetness: 40, masculinity: 95, boldness: 100, notes: "Cinnamon, Nutmeg, Lavender" },
+            { name: "Bleu de Chanel Parfum", house: "Chanel", category: "Executive", sweetness: 30, masculinity: 85, boldness: 60, notes: "Lemon Zest, Sandalwood, Cedar" },
+            { name: "Stronger With You Intensely", house: "Armani", category: "Gourmand", sweetness: 90, masculinity: 75, boldness: 85, notes: "Toffee, Cinnamon, Vanilla" },
+            { name: "Aventus", house: "Creed", category: "Executive", sweetness: 45, masculinity: 90, boldness: 80, notes: "Pineapple, Birch, Musk" },
+            { name: "Megamare", house: "Orto Parisi", category: "Experimental", sweetness: 10, masculinity: 90, boldness: 110, notes: "Seaweed, Metallic, Salt" },
+            { name: "Le Male Elixir", house: "JPG", category: "Gourmand", sweetness: 85, masculinity: 80, boldness: 90, notes: "Honey, Tobacco, Vanilla" },
+            { name: "Y Eau de Parfum", house: "YSL", category: "Blue", sweetness: 60, masculinity: 80, boldness: 75, notes: "Apple, Sage, Ginger" },
+            { name: "Terre d'Hermès", house: "Hermès", category: "Executive", sweetness: 15, masculinity: 95, boldness: 70, notes: "Orange, Flint, Vetiver" },
+            { name: "Black Afgano", house: "Nasomatto", category: "Experimental", sweetness: 20, masculinity: 100, boldness: 100, notes: "Cannabis, Resins, Coffee" },
+            { name: "Spicebomb Extreme", house: "Viktor & Rolf", category: "Powerhouse", sweetness: 70, masculinity: 90, boldness: 95, notes: "Black Pepper, Tobacco, Cumin" },
+            { name: "Acqua di Giò Profondo", house: "Armani", category: "Blue", sweetness: 20, masculinity: 85, boldness: 65, notes: "Marine Notes, Rosemary, Cypress" },
+            { name: "Tobacco Vanille", house: "Tom Ford", category: "Gourmand", sweetness: 75, masculinity: 85, boldness: 90, notes: "Tobacco, Vanilla, Cocoa" },
+            { name: "Ombre Leather", house: "Tom Ford", category: "Powerhouse", sweetness: 10, masculinity: 100, boldness: 85, notes: "Leather, Cardamom, Patchouli" },
+            { name: "Prada L'Homme", house: "Prada", category: "Executive", sweetness: 40, masculinity: 70, boldness: 40, notes: "Iris, Neroli, Sandalwood" },
+            { name: "Tyrannosaurus Rex", house: "Zoologist", category: "Experimental", sweetness: 5, masculinity: 110, boldness: 120, notes: "Blood, Smoke, Resins" },
+            { name: "Hacivat", house: "Nishane", category: "Powerhouse", sweetness: 40, masculinity: 90, boldness: 95, notes: "Pineapple, Grapefruit, Oakmoss" }
+        ];
+
+        function renderCards(data) {
+            const grid = document.getElementById('closetGrid');
+            grid.innerHTML = data.map(f => `
+                <div class="fragrance-card p-6 rounded-2xl" data-category="${f.category}">
+                    <div class="glow-overlay"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="tag">${f.category}</span>
+                            <h3 class="text-xl font-bold text-white mt-2">${f.name}</h3>
+                            <p class="text-xs text-gray-500 uppercase tracking-tighter">${f.house}</p>
+                        </div>
+                        <i class="fa fa-flask text-gray-700"></i>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-1 uppercase text-gray-400">
+                                <span>Sweetness</span>
+                                <span>${f.sweetness}%</span>
+                            </div>
+                            <div class="stat-bar"><div class="stat-fill" style="width: ${f.sweetness}%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-1 uppercase text-gray-400">
+                                <span>Masculinity</span>
+                                <span>${f.masculinity}%</span>
+                            </div>
+                            <div class="stat-bar"><div class="stat-fill" style="width: ${f.masculinity}%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-1 uppercase text-gray-400">
+                                <span>Boldness</span>
+                                <span>${f.boldness}%</span>
+                            </div>
+                            <div class="stat-bar"><div class="stat-fill" style="width: ${f.boldness}%"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-800 pt-4">
+                        <p class="text-[10px] text-gray-500 uppercase mb-1">Core Accord</p>
+                        <p class="text-xs text-gray-300 italic">${f.notes}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (cat === 'All') {
+                renderCards(fragrances);
+            } else {
+                const filtered = fragrances.filter(f => f.category.includes(cat));
+                renderCards(filtered);
+            }
+        }
+
+        function searchFragrances() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = fragrances.filter(f => 
+                f.name.toLowerCase().includes(term) || 
+                f.house.toLowerCase().includes(term) ||
+                f.notes.toLowerCase().includes(term)
+            );
+            renderCards(filtered);
+        }
+
+        // Initial Load
+        window.onload = () => renderCards(fragrances);
+    </script>
+</body>
+</html>
